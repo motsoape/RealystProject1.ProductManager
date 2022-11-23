@@ -11,51 +11,50 @@ namespace ProductManager.Repositories
 {
     public class CommentRepository : IDataRepository<Comment>
     {
-        readonly CommentContext _commentContext;
-        public CommentRepository(CommentContext context)
+        readonly ProductManagerDbContext _context;
+        public CommentRepository(ProductManagerDbContext context)
         {
-            _commentContext = context;
+            _context = context;
         }
 
         public async void Add(Comment entity)
         {
-            await _commentContext.Comments.AddAsync(entity);
-            await _commentContext.SaveChangesAsync();
+            await _context.Comments.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
         public async void AddBulk(IEnumerable<Comment> entities)
         {
-            await _commentContext.Comments.AddRangeAsync(entities);
-            await _commentContext.SaveChangesAsync();
+            await _context.Comments.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
         }
 
         public async void Delete(Comment entity)
         {
-            _commentContext.Comments.Remove(entity);
-            await  _commentContext.SaveChangesAsync();
+            _context.Comments.Remove(entity);
+            await  _context.SaveChangesAsync();
         }
 
         public async Task<Comment> Get(int id)
         {
-            return await _commentContext.Comments.FirstOrDefaultAsync(e => e.CommentID == id);
+            return await _context.Comments.FirstOrDefaultAsync(e => e.CommentID == id);
         }
 
         public async Task<IEnumerable<Comment>> GetAll()
         {
-            return await _commentContext.Comments.ToListAsync();
+            return await _context.Comments.ToListAsync();
         }
 
-        public async void Update(Comment entity)
+        public async void Update(Comment oldEntity, Comment newEntity)
         {
-            var _entityToUpdate = await Get(entity.CommentID);
-            if (_entityToUpdate != null)
+            if (oldEntity != null)
                 throw new Exception("The product cannot be updated");
 
-            _entityToUpdate.CommentContent = entity.CommentContent;
-            _entityToUpdate.Email = entity.Email;
-            _entityToUpdate.DateOfComment = entity.DateOfComment;
+            oldEntity.CommentContent = newEntity.CommentContent;
+            oldEntity.Email = newEntity.Email;
+            oldEntity.DateOfComment = newEntity.DateOfComment;
 
-            await  _commentContext.SaveChangesAsync();
+            await  _context.SaveChangesAsync();
         }
     }
 }

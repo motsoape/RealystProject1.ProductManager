@@ -15,8 +15,4 @@
     <ProjectReference Include="..\ProductManager.Services\ProductManager.Services.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Views\StatsPage\" />
-  </ItemGroup>
-
 </Project>

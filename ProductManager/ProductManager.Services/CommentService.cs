@@ -37,18 +37,23 @@ namespace ProductManager.Services
             _commentRepository.Add(comment);
         }
 
-        public void UpdateComment(Comment comment)
+        public async void UpdateComment(int commentId, Comment newComment)
         {
-            if (comment == null)
-                throw new ArgumentException("Comment cannot be null");
+            if (newComment == null)
+                throw new ArgumentException("New Comment cannot be null");
 
-            _commentRepository.Update(comment);
+            var oldComment = await GetComment(commentId);
+            if (oldComment == null)
+                throw new Exception("Comment not found");
+
+            _commentRepository.Update(oldComment, newComment);
         }
 
-        public void DeleteComment(Comment comment)
+        public async void DeleteComment(int commentId)
         {
+            var comment = await GetComment(commentId);
             if (comment == null)
-                throw new ArgumentException("Comment cannot be null");
+                throw new Exception("Comment not found");
 
             _commentRepository.Delete(comment);
         }

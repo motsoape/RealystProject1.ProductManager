@@ -10,9 +10,9 @@ namespace ProductManager.Services.Interfaces
     public interface ICommentService
     {
         void AddComment(Comment comment);
-        void DeleteComment(Comment comment);
+        void DeleteComment(int commentId);
         Task<Comment> GetComment(int id);
         Task<IEnumerable<Comment>> GetComments();
-        void UpdateComment(Comment comment);
+        void UpdateComment(int commentId, Comment newComment);
     }
 }

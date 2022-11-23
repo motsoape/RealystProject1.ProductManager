@@ -13,7 +13,7 @@ namespace ProductManager.Repositories.Interfaces
         Task<T> Get(int id);
         void AddBulk(IEnumerable<T> entities);
         void Add(T entity);
-        void Update(T entity);
+        void Update(T oldEntity, T newEntity);
         void Delete(T entity);
     }
 }
