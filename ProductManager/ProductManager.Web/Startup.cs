@@ -24,9 +24,11 @@ namespace ProductManager.Web
             //Repositories
             services.AddDbContext<ProductContext>(opts => opts.UseSqlServer(connectionString));
             services.AddDbContext<CommentContext>(opts => opts.UseSqlServer(connectionString));
+            services.AddScoped<IDataRepository<Product>, ProductRepository>();
+            services.AddScoped<IDataRepository<Comment>, CommentRepository>();
 
             //Services
-            
+
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment env)
@@ -42,7 +44,7 @@ namespace ProductManager.Web
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
-            app.MapRazorPages();
+            //app.MapRazorPages();
             app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -4,11 +4,11 @@ using System.Diagnostics;
 
 namespace ProductManager.Web.Controllers
 {
-    public class HomeController : Controller
+    public class ProductsController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<ProductsController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public ProductsController(ILogger<ProductsController> logger)
         {
             _logger = logger;
         }
