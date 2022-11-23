@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using ProductManager.Repositories;
 using ProductManager.Repositories.Entities;
 using ProductManager.Repositories.Interfaces;
+using ProductManager.Services;
+using ProductManager.Services.Interfaces;
 
 namespace ProductManager.Web
 {
@@ -28,7 +30,8 @@ namespace ProductManager.Web
             services.AddScoped<IDataRepository<Comment>, CommentRepository>();
 
             //Services
-
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICommentService, CommentService>();
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment env)

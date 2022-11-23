@@ -1,4 +1,5 @@
-﻿using ProductManager.Repositories.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductManager.Repositories.Entities;
 using ProductManager.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,31 +17,37 @@ namespace ProductManager.Repositories
             _commentContext = context;
         }
 
-        public void Add(Comment entity)
+        public async void Add(Comment entity)
         {
-            _commentContext.Comments.Add(entity);
-            _commentContext.SaveChanges();
+            await _commentContext.Comments.AddAsync(entity);
+            await _commentContext.SaveChangesAsync();
         }
 
-        public void Delete(Comment entity)
+        public async void AddBulk(IEnumerable<Comment> entities)
+        {
+            await _commentContext.Comments.AddRangeAsync(entities);
+            await _commentContext.SaveChangesAsync();
+        }
+
+        public async void Delete(Comment entity)
         {
             _commentContext.Comments.Remove(entity);
-            _commentContext.SaveChanges();
+            await  _commentContext.SaveChangesAsync();
         }
 
-        public Comment Get(int id)
+        public async Task<Comment> Get(int id)
         {
-            return _commentContext.Comments.FirstOrDefault(e => e.CommentID == id);
+            return await _commentContext.Comments.FirstOrDefaultAsync(e => e.CommentID == id);
         }
 
-        public IEnumerable<Comment> GetAll()
+        public async Task<IEnumerable<Comment>> GetAll()
         {
-            return _commentContext.Comments.ToList();
+            return await _commentContext.Comments.ToListAsync();
         }
 
-        public void Update(Comment entity)
+        public async void Update(Comment entity)
         {
-            var _entityToUpdate = Get(entity.CommentID);
+            var _entityToUpdate = await Get(entity.CommentID);
             if (_entityToUpdate != null)
                 throw new Exception("The product cannot be updated");
 
@@ -48,7 +55,7 @@ namespace ProductManager.Repositories
             _entityToUpdate.Email = entity.Email;
             _entityToUpdate.DateOfComment = entity.DateOfComment;
 
-            _commentContext.SaveChanges();
+            await  _commentContext.SaveChangesAsync();
         }
     }
 }

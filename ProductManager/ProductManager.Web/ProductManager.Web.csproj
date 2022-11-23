@@ -12,6 +12,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProductManager.Repositories\ProductManager.Repositories.csproj" />
+    <ProjectReference Include="..\ProductManager.Services\ProductManager.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\StatsPage\" />
   </ItemGroup>
 
 </Project>

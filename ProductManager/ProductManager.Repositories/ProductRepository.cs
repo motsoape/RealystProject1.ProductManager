@@ -1,4 +1,5 @@
-﻿using ProductManager.Repositories.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductManager.Repositories.Entities;
 using ProductManager.Repositories.Interfaces;
 
 namespace ProductManager.Repositories
@@ -11,31 +12,37 @@ namespace ProductManager.Repositories
             _productContext = context;
         }
 
-        public void Add(Product entity)
+        public async void Add(Product entity)
         {
-            _productContext.Products.Add(entity);
-            _productContext.SaveChanges();
+            await _productContext.Products.AddAsync(entity);
+            await _productContext.SaveChangesAsync();
         }
 
-        public void Delete(Product entity)
+        public async void AddBulk(IEnumerable<Product> entities)
+        {
+            await _productContext.Products.AddRangeAsync(entities);
+            await _productContext.SaveChangesAsync();
+        }
+
+        public async void Delete(Product entity)
         {
             _productContext.Products.Remove(entity);
-            _productContext.SaveChanges();
+            await _productContext.SaveChangesAsync();
         }
 
-        public Product Get(int id)
+        public async Task<Product> Get(int id)
         {
-            return _productContext.Products.FirstOrDefault(e => e.ProductID == id);
+            return await _productContext.Products.FirstOrDefaultAsync(e => e.ProductID == id);
         }
 
-        public IEnumerable<Product> GetAll()
+        public async Task<IEnumerable<Product>> GetAll()
         {
-            return _productContext.Products.ToList();
+            return await _productContext.Products.ToListAsync();
         }
 
-        public void Update(Product entity)
+        public async void Update(Product entity)
         {
-            var _entityToUpdate = Get(entity.ProductID);
+            var _entityToUpdate = await Get(entity.ProductID);
             if (_entityToUpdate != null)
                 throw new Exception("The product cannot be updated");
 
@@ -43,7 +50,7 @@ namespace ProductManager.Repositories
             _entityToUpdate.Name = entity.Name;
             _entityToUpdate.ReleaseDate = entity.ReleaseDate;
 
-            _productContext.SaveChanges();
+            await _productContext.SaveChangesAsync();
         }
     }
 }
