@@ -1,56 +1,56 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductManager.Repositories.Entities;
 using ProductManager.Repositories.Interfaces;
+using System.Security.Principal;
 
 namespace ProductManager.Repositories
 {
     public class ProductRepository : IDataRepository<Product>
     {
-        readonly ProductContext _productContext;
-        public ProductRepository(ProductContext context)
+        readonly ProductManagerDbContext _context;
+        public ProductRepository(ProductManagerDbContext context)
         {
-            _productContext = context;
+            _context = context;
         }
 
         public async void Add(Product entity)
         {
-            await _productContext.Products.AddAsync(entity);
-            await _productContext.SaveChangesAsync();
+            await _context.Products.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
         public async void AddBulk(IEnumerable<Product> entities)
         {
-            await _productContext.Products.AddRangeAsync(entities);
-            await _productContext.SaveChangesAsync();
+            await _context.Products.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
         }
 
         public async void Delete(Product entity)
         {
-            _productContext.Products.Remove(entity);
-            await _productContext.SaveChangesAsync();
+            _context.Products.Remove(entity);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<Product> Get(int id)
         {
-            return await _productContext.Products.FirstOrDefaultAsync(e => e.ProductID == id);
+            return await _context.Products.FirstOrDefaultAsync(e => e.ProductID == id);
         }
 
         public async Task<IEnumerable<Product>> GetAll()
         {
-            return await _productContext.Products.ToListAsync();
+            return await _context.Products.ToListAsync();
         }
 
-        public async void Update(Product entity)
+        public async void Update(Product oldEntity, Product newEntity)
         {
-            var _entityToUpdate = await Get(entity.ProductID);
-            if (_entityToUpdate != null)
+            if (oldEntity == null || newEntity == null)
                 throw new Exception("The product cannot be updated");
 
-            _entityToUpdate.Price = entity.Price;
-            _entityToUpdate.Name = entity.Name;
-            _entityToUpdate.ReleaseDate = entity.ReleaseDate;
+            oldEntity.Price = newEntity.Price;
+            oldEntity.Name = newEntity.Name;
+            oldEntity.ReleaseDate = newEntity.ReleaseDate;
 
-            await _productContext.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

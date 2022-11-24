@@ -24,8 +24,7 @@ namespace ProductManager.Web
             services.AddControllersWithViews();
 
             //Repositories
-            services.AddDbContext<ProductContext>(opts => opts.UseSqlServer(connectionString));
-            services.AddDbContext<CommentContext>(opts => opts.UseSqlServer(connectionString));
+            services.AddDbContext<ProductManagerDbContext>(opts => opts.UseSqlServer(connectionString));
             services.AddScoped<IDataRepository<Product>, ProductRepository>();
             services.AddScoped<IDataRepository<Comment>, CommentRepository>();
 
@@ -47,11 +46,34 @@ namespace ProductManager.Web
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
-            //app.MapRazorPages();
             app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+            pattern: "{controller=ProductsPage}/{action=Index}");
+            app.MigrateDatabase();
             app.Run();
+        }
+    }
+
+    public static class MigrationManager
+    {
+        public static WebApplication MigrateDatabase(this WebApplication webApp)
+        {
+            using (var scope = webApp.Services.CreateScope())
+            {
+                using (var appContext = scope.ServiceProvider.GetRequiredService<ProductManagerDbContext>())
+                {
+                    try
+                    {
+                        //appContext.Database.Migrate();
+                        appContext.Database.EnsureCreated();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                }
+            }
+            return webApp;
         }
     }
 }

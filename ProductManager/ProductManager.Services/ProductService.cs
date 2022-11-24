@@ -44,18 +44,23 @@ namespace ProductManager.Services
             _productRepository.AddBulk(products);
         }
 
-        public void UpdateProduct(Product product)
+        public async void UpdateProduct(int productId, Product newProduct)
         {
-            if (product == null)
-                throw new ArgumentException("Product cannot be null");
+            if (newProduct == null)
+                throw new ArgumentException("New new Product cannot be null");
 
-            _productRepository.Update(product);
+            var oldProduct = await GetProduct(productId);
+            if (oldProduct == null)
+                throw new Exception("Product not found");
+
+            _productRepository.Update(oldProduct, newProduct);
         }
 
-        public void DeleteProduct(Product product)
+        public async void DeleteProduct(int productId)
         {
+            var product = await GetProduct(productId);
             if (product == null)
-                throw new ArgumentException("Product cannot be null");    
+                throw new Exception("Product not found");    
 
             _productRepository.Delete(product);
         }

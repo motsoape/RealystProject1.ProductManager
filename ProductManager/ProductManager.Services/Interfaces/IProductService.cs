@@ -11,9 +11,9 @@ namespace ProductManager.Services.Interfaces
     {
         void AddBulkProduct(IEnumerable<Product> products);
         void AddProduct(Product product);
-        void DeleteProduct(Product product);
+        void DeleteProduct(int productId);
         Task<Product> GetProduct(int id);
         Task<IEnumerable<Product>> GetProducts();
-        void UpdateProduct(Product product);
+        void UpdateProduct(int productId, Product newProduct);
     }
 }
