@@ -13,8 +13,8 @@ namespace ProductManager.Repositories.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CommentID { get; set; }
-        public string CommentContent { get; set; }
-        public string Email { get; set; }
+        public string? CommentContent { get; set; }
+        public string? Email { get; set; }
         public DateTime DateOfComment { get; set; }
 
         public Product Product { get; set; }
