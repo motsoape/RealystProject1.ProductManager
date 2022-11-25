@@ -43,13 +43,16 @@ namespace ProductManager.Repositories
 
         public async Task Delete(CommentModel entity)
         {
-            var entityToDelete = await _context.Comments.FirstOrDefaultAsync(e => e.CommentID == entity.CommentID);
+            try
+            {
+                var entityToDelete = await _context.Comments.FirstOrDefaultAsync(e => e.CommentID == entity.CommentID);
 
-            if (entityToDelete == null)
-                throw new Exception("The Comment cannot be found");
+                if (entityToDelete == null)
+                    throw new Exception("The Comment cannot be found");
 
-            _context.Comments.Remove(entityToDelete);
-            await _context.SaveChangesAsync();
+                _context.Comments.Remove(entityToDelete);
+                await _context.SaveChangesAsync();
+            }catch(Exception ex) { }
         }
 
         public async Task<CommentModel> Get(int id)

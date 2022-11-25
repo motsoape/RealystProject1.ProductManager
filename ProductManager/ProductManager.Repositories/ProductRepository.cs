@@ -43,13 +43,17 @@ namespace ProductManager.Repositories
 
         public async Task Delete(ProductModel entity)
         {
-            var entityToDelete = await _context.Products.FirstOrDefaultAsync(e => e.ProductID == entity.ProductID);
+            try
+            {
+                var entityToDelete = await _context.Products.FirstOrDefaultAsync(e => e.ProductID == entity.ProductID);
 
-            if (entityToDelete == null)
-                throw new Exception("The product cannot be found");
+                if (entityToDelete == null)
+                    throw new Exception("The product cannot be found");
 
-            _context.Products.Remove(entityToDelete);
-            await _context.SaveChangesAsync();
+                _context.Products.Remove(entityToDelete);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex) { }
         }
 
         public async Task<ProductModel> Get(int id)

@@ -77,6 +77,7 @@
     $(document).on('click', ".delete-comment", function () {
         var commentId = $(this).data("id");
         var productId = $(this).data("pid");
+        console.log(productId)
 
         $.ajax(BaseURL + '/api/Comment/' + commentId,
             {
@@ -161,7 +162,7 @@
                                 '<td>' + data.comments[i].commentContent + '</td>' +
                                 '<td class="text-center">' +
                                 '<button type="button" class="btn btn-primary edit-comment" data-id="' + data.comments[i].commentID + '">Edit</button>' +
-                                '<button type="button" class="btn btn-danger delete-comment" data-id="' + data.comments[i].commentID + '" data-id="' + data.comments[i].productID +'">Delete</button>' +
+                                '<button type="button" class="btn btn-danger delete-comment" data-id="' + data.comments[i].commentID + '" data-pid="' + data.comments[i].productID +'">Delete</button>' +
                                 '</td></tr>'
                             );
                         }
