@@ -26,11 +26,6 @@ namespace ProductManager
             services.AddSingleton<ProcessData, ProcessData>();
             services.AddSingleton<IWebService, WebService>();
             services.AddScoped<IFileService, FileService>();
-            /*services.AddSingleton(new LoggerFactory()
-                .AddConsole(Configuration.GetSection("Logging"))
-                .AddSerilog()
-                .AddDebug());
-            services.AddLogging();*/
         }
 
         public void Configure(IHost consoleApp, IHostEnvironment env)

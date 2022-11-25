@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace ProductManager.Web.Controllers
+namespace ProductManager.Web.Controllers.Pages
 {
-    public class StatsPageController : Controller
+    public class ProductsPageController : Controller
     {
+        [HttpGet]
         public IActionResult Index()
         {
             return View();

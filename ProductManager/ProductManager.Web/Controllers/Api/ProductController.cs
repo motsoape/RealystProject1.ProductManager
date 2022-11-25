@@ -3,14 +3,14 @@ using ProductManager.Repositories.Entities;
 using ProductManager.Services;
 using ProductManager.Services.Interfaces;
 using ProductManager.Web.Models;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Diagnostics;
 
-namespace ProductManager.Web.Controllers
+namespace ProductManager.Web.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Produces("application/json")]
-    public class ProductController : Controller
+    public class ProductController : ControllerBase
     {
         private readonly ILogger<ProductController> _logger;
         private readonly IProductService _productService;
@@ -23,71 +23,53 @@ namespace ProductManager.Web.Controllers
 
         // GET: api/Product
         [HttpGet]
-        public async Task<IActionResult> Get()
+        [SwaggerOperation("GetProducts")]
+        public async Task<IEnumerable<Product>> Get()
         {
             IEnumerable<Product> product = await _productService.GetProducts();
-            return Ok(product);
+            return product;
         }
 
         // GET: api/Product/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        [SwaggerOperation("GetProduct")]
+        public async Task<Product> Get(int id)
         {
             Product product = await _productService.GetProduct(id);
-            if (product == null)
-            {
-                return NotFound("The comment record couldn't be found.");
-            }
-            return Ok(product);
+
+            return product;
         }
 
         // POST: api/Product
         [HttpPost]
-        public IActionResult Post([FromBody] Product product)
+        [SwaggerOperation("AddProduct")]
+        public void Post([FromBody] Product product)
         {
-            if (product == null)
-            {
-                return BadRequest("Comment is null.");
-            }
             _productService.AddProduct(product);
-
-            return CreatedAtRoute("Get", new { Id = product.ProductID }, product);
         }
 
         // POST: api/Product/Bulk
-        [HttpPost]
-        public IActionResult Post([FromBody] IEnumerable<Product> products)
+        [HttpPost("bulk")]
+        [SwaggerOperation("BulkAddProducts")]
+        public void Post([FromBody] IEnumerable<Product> products)
         {
-            if (products == null)
-            {
-                return BadRequest("Comments is null.");
-            }
             _productService.AddBulkProduct(products);
-
-            return NoContent();
         }
 
         // PUT: api/Product/{id}
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Product product)
+        [SwaggerOperation("UpdateProduct")]
+        public void Put(int id, [FromBody] Product product)
         {
-            if (product == null)
-            {
-                return BadRequest("Product is null.");
-            }
-
             _productService.UpdateProduct(id, product);
-
-            return NoContent();
         }
 
         // DELETE: api/Product/{id}
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [SwaggerOperation("DeleteProduct")]
+        public void Delete(int id)
         {
             _productService.DeleteProduct(id);
-
-            return NoContent();
         }
     }
 }

@@ -17,11 +17,17 @@ namespace ProductManager.Web
             Configuration = configuration;
         }
 
+        //Register all services into the container
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration["ConnectionString:ProductManagerDB"];
 
             services.AddControllersWithViews();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Product Manager API", Version= "v1" });
+            });
 
             //Repositories
             services.AddDbContext<ProductManagerDbContext>(opts => opts.UseSqlServer(connectionString));
@@ -35,11 +41,10 @@ namespace ProductManager.Web
 
         public void Configure(WebApplication app, IWebHostEnvironment env)
         {
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+            if (app.Environment.IsDevelopment())
+            {  
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
