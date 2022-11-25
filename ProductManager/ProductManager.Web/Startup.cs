@@ -3,8 +3,10 @@ using Microsoft.Extensions.Configuration;
 using ProductManager.Repositories;
 using ProductManager.Repositories.Entities;
 using ProductManager.Repositories.Interfaces;
+using ProductManager.Repositories.Models;
 using ProductManager.Services;
 using ProductManager.Services.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace ProductManager.Web
 {
@@ -31,12 +33,13 @@ namespace ProductManager.Web
 
             //Repositories
             services.AddDbContext<ProductManagerDbContext>(opts => opts.UseSqlServer(connectionString));
-            services.AddScoped<IDataRepository<Product>, ProductRepository>();
-            services.AddScoped<IDataRepository<Comment>, CommentRepository>();
+            services.AddScoped<IDataRepository<ProductModel>, ProductRepository>();
+            services.AddScoped<IDataRepository<CommentModel>, CommentRepository>();
 
             //Services
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<IStats, Stats>();
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment env)

@@ -1,13 +1,22 @@
 ﻿@{
     ViewData["Title"] = "Stats";
+    @model string
 }
+@section Scripts
+{
+    <script>
+        var BaseURL = '@Model';
+    </script>
+    <script src="~/js/stats-page.js"></script>
+}
+
 
 <div class="text-center">
     <h1 class="display-4">Stats</h1>
 
-    <h3 class="display-4">Total Products: 4 Total Comments: 12</h3>
+    <h3 class="display-6" id="stats-view"></h3>
     <div class="table-responsive">
-        <table class="table">
+        <table class="table" id="stats-table">
             <thead>
                 <tr>
                     <th>Product Name</th>

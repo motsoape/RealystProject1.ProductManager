@@ -1,15 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductManager.Repositories.Entities;
 using ProductManager.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ProductManager.Repositories.Models;
 
 namespace ProductManager.Repositories
 {
-    public class CommentRepository : IDataRepository<Comment>
+    public class CommentRepository : IDataRepository<CommentModel>
     {
         readonly ProductManagerDbContext _context;
         public CommentRepository(ProductManagerDbContext context)
@@ -17,38 +13,80 @@ namespace ProductManager.Repositories
             _context = context;
         }
 
-        public async void Add(Comment entity)
+        public async Task Add(CommentModel entity)
         {
-            await _context.Comments.AddAsync(entity);
+            var newEntity = new Comment
+            {
+                CommentContent= entity.CommentContent,
+                Email= entity.Email,
+                ProductID= entity.ProductID
+            };
+            await _context.Comments.AddAsync(newEntity);
             await _context.SaveChangesAsync();
         }
 
-        public async void AddBulk(IEnumerable<Comment> entities)
+        public async Task AddBulk(IEnumerable<CommentModel> entities)
         {
-            await _context.Comments.AddRangeAsync(entities);
+            var newEntities = new List<Comment>();
+            foreach (var entity in entities)
+            {
+                newEntities.Add(new Comment
+                {
+                    CommentContent = entity.CommentContent,
+                    Email = entity.Email,
+                    ProductID = entity.ProductID
+                });
+            }
+            await _context.Comments.AddRangeAsync(newEntities);
             await _context.SaveChangesAsync();
         }
 
-        public async void Delete(Comment entity)
+        public async Task Delete(CommentModel entity)
         {
-            _context.Comments.Remove(entity);
-            await  _context.SaveChangesAsync();
+            var entityToDelete = await _context.Comments.FirstOrDefaultAsync(e => e.CommentID == entity.CommentID);
+
+            if (entityToDelete == null)
+                throw new Exception("The Comment cannot be found");
+
+            _context.Comments.Remove(entityToDelete);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<Comment> Get(int id)
+        public async Task<CommentModel> Get(int id)
         {
-            return await _context.Comments.FirstOrDefaultAsync(e => e.CommentID == id);
+            return await _context.Comments.Include(x => x.Product)
+                .Select(x => new CommentModel
+                {
+                    CommentID = x.CommentID,
+                    CommentContent = x.CommentContent,
+                    Email = x.Email,
+                    DateOfComment = x.DateOfComment,
+                    ProductID = x.ProductID
+                }).FirstOrDefaultAsync(e => e.CommentID == id);
         }
 
-        public async Task<IEnumerable<Comment>> GetAll()
+        public async Task<IEnumerable<CommentModel>> GetAll()
         {
-            return await _context.Comments.ToListAsync();
+            return await _context.Comments.Include(x => x.Product)
+                .Select(x => new CommentModel
+                {
+                    CommentID = x.CommentID,
+                    CommentContent = x.CommentContent,
+                    Email = x.Email,
+                    DateOfComment = x.DateOfComment,
+                    ProductID = x.ProductID
+                }).ToListAsync();
         }
 
-        public async void Update(Comment oldEntity, Comment newEntity)
+        public async Task Update(int id, CommentModel newEntity)
         {
-            if (oldEntity != null)
-                throw new Exception("The product cannot be updated");
+            if (newEntity == null)
+                throw new Exception("The Comment cannot be null");
+
+            var oldEntity = await _context.Comments.FirstOrDefaultAsync(e => e.CommentID == id);
+
+            if (oldEntity == null)
+                throw new Exception("The Comment cannot be found");
 
             oldEntity.CommentContent = newEntity.CommentContent;
             oldEntity.Email = newEntity.Email;

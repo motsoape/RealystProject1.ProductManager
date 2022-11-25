@@ -17,6 +17,6 @@ namespace ProductManager.Repositories.Entities
         public double Price { get; set; }
         public DateTime ReleaseDate { get; set; }
 
-        public ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
     }
 }

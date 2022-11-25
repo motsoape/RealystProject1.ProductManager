@@ -7,7 +7,8 @@ namespace ProductManager.Web.Controllers.Pages
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
+            return View((object)baseUrl);
         }
     }
 }

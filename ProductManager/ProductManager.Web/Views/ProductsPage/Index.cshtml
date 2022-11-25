@@ -1,12 +1,21 @@
 ﻿@{
     ViewData["Title"] = "Products";
+    @model string
+}
+@section Scripts
+{
+    <script>
+        var BaseURL = '@Model';
+    </script>
+    <script src="~/js/product-page.js"></script>
 }
 
 <div class="text-center">
     <h1 class="display-4">Products</h1>
-    <button class="btn btn-primary">Add Product</button>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-product-modal">Add Product</button>
+
     <div class="table-responsive">
-        <table class="table">
+        <table class="table" id="products-table">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -16,17 +25,162 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                   <td></td>
-                   <td></td>
-                   <td></td>
-                   <td class="text-center">
-                        <button class="btn btn-primary">Comments</button>
-                        <button class="btn btn-primary">Edit</button>
-                        <button class="btn btn-danger">Delete</button>
-                   </td>
-                </tr>
             </tbody>
         </table>
+    </div>
+</div>
+
+
+<!-- Add Modal -->
+<div class="modal fade" id="add-product-modal" tabindex="-1" aria-labelledby="add-product-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="data-form" id="add-product-form" method="POST" action="@(Model+"/api/Product")">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Add Product</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                        <label for="add-product-name-ctrl" class="form-label">Product Name</label>
+                        <input type="text" name="name" class="form-control" id="add-product-name-ctrl" placeholder="Product Name" required="true">
+                        </div>
+                        <div class="mb-3">
+                            <label for="add-product-price-ctrl" class="form-label">Product Price</label>
+                        <input type="number" name="price" class="form-control" id="add-product-price-ctrl" placeholder="Product Price" step="any" required="true">
+                        </div>
+                        <div class="mb-3 date" id="datepicker">
+                        <label for="add-product-release-date-ctrl" class="form-label">Product Release Date</label>
+                        <input type="text" name="releaseDate" class="form-control date-pickers" id="add-product-release-date-ctrl" placeholder="Product Release Date" required="true">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="edit-product-modal" tabindex="-1" aria-labelledby="edit-product-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="data-form" id="edit-product-form" method="PUT" action="">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Edit Product</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit-product-name-ctrl" class="form-label">Product Name</label>
+                        <input type="text" name="name" class="form-control" id="edit-product-name-ctrl" placeholder="Product Name" required="true">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-product-price-ctrl" class="form-label">Product Price</label>
+                        <input type="number" name="price" class="form-control" id="edit-product-price-ctrl" placeholder="Product Price" step="any" required="true">
+                    </div>
+                    <div class="mb-3 date" id="datepicker">
+                        <label for="edit-product-release-date-ctrl" class="form-label">Product Release Date</label>
+                        <input type="text" name="releaseDate" class="form-control date-pickers" id="edit-product-release-date-ctrl" placeholder="Product Release Date" required="true">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Comments -->
+<div class="modal fade" id="view-comments-modal" tabindex="-1" aria-labelledby="view-comments-modal" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="comments-view">Product Comments</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table" id="comments-table">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Comment Date</th>
+                                <th>Comment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="add-comment-btn" data-bs-target="#add-comment-modal" data-bs-toggle="modal">Add Comment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Comment -->
+<div class="modal fade" id="add-comment-modal" tabindex="-1" aria-labelledby="add-comment-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="data-form" id="add-comment-form" method="POST" action="@(Model+"/api/Comment")">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Add Comment</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="productID" class="form-control" id="add-comment-productId-ctrl" >
+                    <div class="mb-3">
+                        <label for="add-comment-email-ctrl" class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" id="add-comment-email-ctrl" placeholder="Email" required="true">
+                    </div>
+                    <div class="mb-3">
+                        <label for="add-comment-content-ctrl" class="form-label">Comment Area</label>
+                        <textarea name="commentContent" class="form-control" id="add-comment-content-ctrl" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Comment -->
+<div class="modal fade" id="edit-comment-modal" tabindex="-1" aria-labelledby="edit-comment-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="data-form" id="edit-comment-form" method="PUT" action="">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Edit Comment</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="productID" class="form-control" id="edit-comment-productId-ctrl">
+                    <div class="mb-3">
+                        <label for="edit-comment-email-ctrl" class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" id="edit-comment-email-ctrl" placeholder="Email" required="true">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-comment-content-ctrl" class="form-label">Comment Area</label>
+                        <textarea name="commentContent" class="form-control" id="edit-comment-content-ctrl" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>

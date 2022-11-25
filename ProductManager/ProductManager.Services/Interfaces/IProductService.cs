@@ -1,4 +1,6 @@
 ﻿using ProductManager.Repositories.Entities;
+using ProductManager.Repositories.Models;
+using ProductManager.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +11,11 @@ namespace ProductManager.Services.Interfaces
 {
     public interface IProductService
     {
-        void AddBulkProduct(IEnumerable<Product> products);
-        void AddProduct(Product product);
-        void DeleteProduct(int productId);
-        Task<Product> GetProduct(int id);
-        Task<IEnumerable<Product>> GetProducts();
-        void UpdateProduct(int productId, Product newProduct);
+        Task AddBulkProduct(IEnumerable<ProductModel> products);
+        Task AddProduct(ProductModel product);
+        Task DeleteProduct(int productId);
+        Task<ProductModel> GetProduct(int id);
+        Task<IEnumerable<ProductModel>> GetProducts();
+        Task UpdateProduct(int productId, ProductModel newProduct);
     }
 }
