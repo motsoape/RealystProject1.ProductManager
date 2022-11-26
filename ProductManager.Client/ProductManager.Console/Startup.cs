@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ProductManager.Models;
 using ProductManager.Services;
 using ProductManager.Services.Interfaces;
 using System;
@@ -23,6 +24,13 @@ namespace ProductManager
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var baseURL = Configuration["ProductManagerAPI:BaseURL"];
+            var appSettings = new AppSettings
+            {
+                ApplicationBaseURL = baseURL
+            };
+
+            services.AddSingleton(appSettings);
             services.AddSingleton<ProcessData, ProcessData>();
             services.AddSingleton<IWebService, WebService>();
             services.AddScoped<IFileService, FileService>();
