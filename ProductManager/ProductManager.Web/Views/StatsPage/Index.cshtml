@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Stats";
+    @model string
+}
+@section Scripts
+{
+    <script>
+        var BaseURL = '@Model';
+    </script>
+    <script src="~/js/stats-page.js"></script>
+}
+
+
+<div class="text-center">
+    <h1 class="display-4">Stats</h1>
+
+    <h3 class="display-6" id="stats-view"></h3>
+    <div class="table-responsive">
+        <table id="stats-table"></table>
+    </div>
+</div>

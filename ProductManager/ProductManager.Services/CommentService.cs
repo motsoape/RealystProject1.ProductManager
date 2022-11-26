@@ -1,7 +1,9 @@
 ﻿using ProductManager.Repositories;
 using ProductManager.Repositories.Entities;
 using ProductManager.Repositories.Interfaces;
+using ProductManager.Repositories.Models;
 using ProductManager.Services.Interfaces;
+using ProductManager.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,45 +14,46 @@ namespace ProductManager.Services
 {
     public class CommentService : ICommentService
     {
-        private readonly IDataRepository<Comment> _commentRepository;
+        private readonly IDataRepository<CommentModel> _commentRepository;
 
-        public CommentService(IDataRepository<Comment> commentRepository)
+        public CommentService(IDataRepository<CommentModel> commentRepository)
         {
             _commentRepository = commentRepository;
         }
 
-        public async Task<Comment> GetComment(int id)
+        public async Task<CommentModel> GetComment(int id)
         {
             return await _commentRepository.Get(id);
         }
 
-        public async Task<IEnumerable<Comment>> GetComments()
+        public async Task<IEnumerable<CommentModel>> GetComments()
         {
             return await _commentRepository.GetAll();
         }
 
-        public void AddComment(Comment comment)
+        public async Task AddComment(CommentModel comment)
         {
             if (comment == null)
                 throw new ArgumentException("Comment cannot be null");
 
-            _commentRepository.Add(comment);
+            await _commentRepository.Add(comment);
         }
 
-        public void UpdateComment(Comment comment)
+        public async Task UpdateComment(int commentId, CommentModel comment)
         {
             if (comment == null)
-                throw new ArgumentException("Comment cannot be null");
+                throw new ArgumentException("New Comment cannot be null");
 
-            _commentRepository.Update(comment);
+            await _commentRepository.Update(commentId, comment);
         }
 
-        public void DeleteComment(Comment comment)
+        public async Task DeleteComment(int commentId)
         {
+            var comment = await GetComment(commentId);
             if (comment == null)
-                throw new ArgumentException("Comment cannot be null");
+                throw new Exception("Comment not found");
 
-            _commentRepository.Delete(comment);
+            await _commentRepository.Delete(comment);
         }
     }
 }

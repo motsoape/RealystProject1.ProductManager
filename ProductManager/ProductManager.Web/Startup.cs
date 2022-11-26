@@ -3,8 +3,10 @@ using Microsoft.Extensions.Configuration;
 using ProductManager.Repositories;
 using ProductManager.Repositories.Entities;
 using ProductManager.Repositories.Interfaces;
+using ProductManager.Repositories.Models;
 using ProductManager.Services;
 using ProductManager.Services.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace ProductManager.Web
 {
@@ -17,41 +19,69 @@ namespace ProductManager.Web
             Configuration = configuration;
         }
 
+        //Register all services into the container
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration["ConnectionString:ProductManagerDB"];
 
             services.AddControllersWithViews();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Product Manager API", Version= "v1" });
+            });
 
             //Repositories
-            services.AddDbContext<ProductContext>(opts => opts.UseSqlServer(connectionString));
-            services.AddDbContext<CommentContext>(opts => opts.UseSqlServer(connectionString));
-            services.AddScoped<IDataRepository<Product>, ProductRepository>();
-            services.AddScoped<IDataRepository<Comment>, CommentRepository>();
+            services.AddDbContext<ProductManagerDbContext>(opts => opts.UseSqlServer(connectionString));
+            services.AddScoped<IDataRepository<ProductModel>, ProductRepository>();
+            services.AddScoped<IDataRepository<CommentModel>, CommentRepository>();
 
             //Services
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<IStatsService, StatsService>();
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment env)
         {
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+            if (app.Environment.IsDevelopment())
+            {  
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
-            //app.MapRazorPages();
             app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+            pattern: "{controller=ProductsPage}/{action=Index}");
+            app.MigrateDatabase();
             app.Run();
+        }
+    }
+
+    public static class MigrationManager
+    {
+        public static WebApplication MigrateDatabase(this WebApplication webApp)
+        {
+            using (var scope = webApp.Services.CreateScope())
+            {
+                using (var appContext = scope.ServiceProvider.GetRequiredService<ProductManagerDbContext>())
+                {
+                    try
+                    {
+                        //appContext.Database.Migrate();
+                        appContext.Database.EnsureCreated();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                }
+            }
+            return webApp;
         }
     }
 }

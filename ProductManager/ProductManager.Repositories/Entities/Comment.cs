@@ -13,11 +13,13 @@ namespace ProductManager.Repositories.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CommentID { get; set; }
-        public string CommentContent { get; set; }
-        public string Email { get; set; }
-        public DateTime DateOfComment { get; set; }
+        public string? CommentContent { get; set; }
+        public string? Email { get; set; }
+        public DateTime DateOfComment { get; set; } = DateTime.UtcNow;
 
-        public Product Product { get; set; }
+        [ForeignKey("Product")]
+        public int ProductID { get; set; }
+        public virtual Product Product { get; set; }
 
     }
 }

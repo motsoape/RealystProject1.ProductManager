@@ -1,4 +1,6 @@
 ﻿using ProductManager.Repositories.Entities;
+using ProductManager.Repositories.Models;
+using ProductManager.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +11,10 @@ namespace ProductManager.Services.Interfaces
 {
     public interface ICommentService
     {
-        void AddComment(Comment comment);
-        void DeleteComment(Comment comment);
-        Task<Comment> GetComment(int id);
-        Task<IEnumerable<Comment>> GetComments();
-        void UpdateComment(Comment comment);
+        Task AddComment(CommentModel comment);
+        Task DeleteComment(int commentId);
+        Task<CommentModel> GetComment(int id);
+        Task<IEnumerable<CommentModel>> GetComments();
+        Task UpdateComment(int commentId, CommentModel newComment);
     }
 }

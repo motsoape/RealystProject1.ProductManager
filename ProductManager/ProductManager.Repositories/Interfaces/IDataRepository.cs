@@ -11,9 +11,9 @@ namespace ProductManager.Repositories.Interfaces
     {
         Task<IEnumerable<T>> GetAll();
         Task<T> Get(int id);
-        void AddBulk(IEnumerable<T> entities);
-        void Add(T entity);
-        void Update(T entity);
-        void Delete(T entity);
+        Task AddBulk(IEnumerable<T> entities);
+        Task Add(T entity);
+        Task Update(int id, T newEntity);
+        Task Delete(T entity);
     }
 }
