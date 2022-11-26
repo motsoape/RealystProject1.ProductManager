@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductManager.Repositories.Entities;
 using ProductManager.Repositories.Interfaces;
-using System.Security.Principal;
+using ProductManager.Repositories.Models;
 
 namespace ProductManager.Repositories
 {
-    public class ProductRepository : IDataRepository<Product>
+    public class ProductRepository : IDataRepository<ProductModel>
     {
         readonly ProductManagerDbContext _context;
         public ProductRepository(ProductManagerDbContext context)
@@ -13,38 +13,94 @@ namespace ProductManager.Repositories
             _context = context;
         }
 
-        public async void Add(Product entity)
+        public async Task Add(ProductModel entity)
         {
-            await _context.Products.AddAsync(entity);
+            var newEntity = new Product
+            {
+                Name= entity.Name,
+                Price= entity.Price,
+                ReleaseDate= entity.ReleaseDate
+            };
+            await _context.Products.AddAsync(newEntity);
             await _context.SaveChangesAsync();
         }
 
-        public async void AddBulk(IEnumerable<Product> entities)
+        public async Task AddBulk(IEnumerable<ProductModel> entities)
         {
-            await _context.Products.AddRangeAsync(entities);
+            var newEntities = new List<Product>();
+            foreach (var entity in entities)
+            {
+                newEntities.Add(new Product
+                {
+                    Name = entity.Name,
+                    Price = entity.Price,
+                    ReleaseDate = entity.ReleaseDate
+                });
+            }
+            await _context.Products.AddRangeAsync(newEntities);
             await _context.SaveChangesAsync();
         }
 
-        public async void Delete(Product entity)
+        public async Task Delete(ProductModel entity)
         {
-            _context.Products.Remove(entity);
+            var entityToDelete = await _context.Products.FirstOrDefaultAsync(e => e.ProductID == entity.ProductID);
+
+            if (entityToDelete == null)
+                throw new Exception("The product cannot be found");
+
+            _context.Products.Remove(entityToDelete);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Product> Get(int id)
+        public async Task<ProductModel> Get(int id)
         {
-            return await _context.Products.FirstOrDefaultAsync(e => e.ProductID == id);
+            return await _context.Products.Include(x => x.Comments)
+                .Select(x => new ProductModel
+                {
+                    Name = x.Name,
+                    ProductID = x.ProductID,
+                    Price = x.Price,
+                    ReleaseDate = x.ReleaseDate,
+                    Comments = x.Comments.Select(c => new CommentModel
+                    {
+                        CommentID = c.CommentID,
+                        CommentContent = c.CommentContent,
+                        DateOfComment = c.DateOfComment,
+                        Email = c.Email,
+                        ProductID = c.ProductID
+                    })
+                }).FirstOrDefaultAsync(e => e.ProductID == id);
         }
 
-        public async Task<IEnumerable<Product>> GetAll()
+        public async Task<IEnumerable<ProductModel>> GetAll()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products.Include(x => x.Comments)
+                .Select(x => new ProductModel
+                {
+                    Name = x.Name,
+                    ProductID = x.ProductID,
+                    Price = x.Price,
+                    ReleaseDate = x.ReleaseDate,
+                    Comments = x.Comments.Select(c => new CommentModel
+                    {
+                        CommentID = c.CommentID,
+                        CommentContent = c.CommentContent,
+                        DateOfComment = c.DateOfComment,
+                        Email = c.Email,
+                        ProductID = c.ProductID
+                    })
+                }).ToListAsync();
         }
 
-        public async void Update(Product oldEntity, Product newEntity)
+        public async Task Update(int id, ProductModel newEntity)
         {
-            if (oldEntity == null || newEntity == null)
-                throw new Exception("The product cannot be updated");
+            if (newEntity == null)
+                throw new Exception("The product cannot be null");
+
+            var oldEntity = await _context.Products.FirstOrDefaultAsync(e => e.ProductID == id);
+
+            if (oldEntity == null)
+                throw new Exception("The product cannot be found");
 
             oldEntity.Price = newEntity.Price;
             oldEntity.Name = newEntity.Name;
