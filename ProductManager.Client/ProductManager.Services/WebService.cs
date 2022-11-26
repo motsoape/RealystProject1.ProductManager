@@ -13,13 +13,16 @@ namespace ProductManager.Services
 {
     public class WebService : IWebService
     {
-        public WebService() { }
+        private readonly AppSettings _appSettings;
+        public WebService(AppSettings appSettings) {
+            _appSettings = appSettings;
+        }
 
         public async Task SubmitProducts(IEnumerable<Product> products)
         {
             using (HttpClient http = new HttpClient())
             {
-                http.BaseAddress = new Uri("http://localhost:5089/");
+                http.BaseAddress = new Uri(_appSettings.ApplicationBaseURL);
                 http.DefaultRequestHeaders.Accept.Clear();
                 http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -27,16 +30,18 @@ namespace ProductManager.Services
 
                 try
                 {
-                    var responseMessage = await http.PostAsync("api/Product/Bulk", content);
-                    var response = await responseMessage.Content.ReadAsStringAsync();
+                    var responseTask = http.PostAsync("api/Product/Bulk", content);
+                    responseTask.Wait();
 
-                    if (!responseMessage.IsSuccessStatusCode)
+                    var result = responseTask.Result;
+                    if (result.IsSuccessStatusCode)
                     {
-                        throw new Exception(responseMessage.ReasonPhrase + JsonConvert.SerializeObject(responseMessage));
+                        var readTask = result.Content.ReadAsStringAsync();
+                        readTask.Wait();
                     }
-                    if (response.ToString().Contains("ERROR"))
+                    if (!result.IsSuccessStatusCode)
                     {
-                        throw new Exception(response.ToString() + JsonConvert.SerializeObject(responseMessage));
+                        throw new Exception(result.ReasonPhrase + JsonConvert.SerializeObject(result));
                     }
                 }
                 catch (Exception ex)
