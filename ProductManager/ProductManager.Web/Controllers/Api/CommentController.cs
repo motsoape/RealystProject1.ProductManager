@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Logging;
 using ProductManager.Repositories.Entities;
 using ProductManager.Repositories.Interfaces;
 using ProductManager.Repositories.Models;
@@ -14,10 +16,12 @@ namespace ProductManager.Web.Controllers.Api
     public class CommentController : ControllerBase
     {
         private readonly ICommentService _commentsService;
+        private readonly ILogger<CommentController> _logger;
 
-        public CommentController(ICommentService commentsService)
+        public CommentController(ICommentService commentsService, ILogger<CommentController> logger)
         {
             _commentsService = commentsService;
+            _logger = logger;
         }
 
         // GET: api/Comment
@@ -25,8 +29,15 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("GetComments")]
         public async Task<IEnumerable<CommentModel>> Get()
         {
-            IEnumerable<CommentModel> comments = await _commentsService.GetComments();
-            return comments;
+            try { 
+                IEnumerable<CommentModel> comments = await _commentsService.GetComments();
+                return comments;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Get Comments", ex);
+                throw;
+            }
         }
 
         // GET: api/Comment/{id}
@@ -34,9 +45,16 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("GetComment")]
         public async Task<CommentModel> Get(int id)
         {
-            CommentModel comment = await _commentsService.GetComment(id);
+            try { 
+                CommentModel comment = await _commentsService.GetComment(id);
 
-            return comment;
+                return comment;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Get Comment", ex);
+                throw;
+            }
         }
 
         // POST: api/Comment
@@ -44,9 +62,19 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("AddComment")]
         public async Task<bool> Post([FromBody] CommentModel comment)
         {
-            await _commentsService.AddComment(comment);
+            try {
+                if (comment == null)
+                    throw new ArgumentNullException(nameof(comment), "Cannot be Null or Empty");
 
-            return true;
+                await _commentsService.AddComment(comment);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Add Comment", ex);
+                throw;
+            }
         }
 
         // PUT: api/Comment/{id}
@@ -54,9 +82,19 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("UpdateComment")]
         public async Task<bool> Put(int id, [FromBody] CommentModel comment)
         {
-            await _commentsService.UpdateComment(id, comment);
+            try {
+                if (comment == null)
+                    throw new ArgumentNullException(nameof(comment), "Cannot be Null or Empty");
 
-            return true;
+                await _commentsService.UpdateComment(id, comment);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Update Comment", ex);
+                throw;
+            }
         }
 
         // DELETE: api/Comment/{id}
@@ -64,9 +102,16 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("DeleteComment")]
         public async Task<bool> Delete(int id)
         {
-            await _commentsService.DeleteComment(id);
+            try { 
+                await _commentsService.DeleteComment(id);
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Delete Comment", ex);
+                throw;
+            }
         }
     }
 }

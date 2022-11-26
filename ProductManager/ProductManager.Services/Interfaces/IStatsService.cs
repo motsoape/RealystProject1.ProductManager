@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProductManager.Services.Interfaces
 {
-    public interface IStats
+    public interface IStatsService
     {
         Task<StatsModel> GetStats();
     }

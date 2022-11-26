@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using ProductManager.Repositories.Entities;
 using ProductManager.Services;
 using ProductManager.Services.Interfaces;
@@ -12,11 +13,13 @@ namespace ProductManager.Web.Controllers.Api
     [Route("api/[controller]")]
     public class StatsController : ControllerBase
     {
-        private readonly IStats _stats;
+        private readonly IStatsService _stats;
+        private readonly ILogger<StatsController> _logger;
 
-        public StatsController(IStats stats)
+        public StatsController(IStatsService stats, ILogger<StatsController> logger)
         {
             _stats = stats;
+            _logger = logger;
         }
 
         // GET: api/Stats
@@ -24,8 +27,16 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("GetStats")]
         public async Task<StatsModel> Get()
         {
-            var results = await _stats.GetStats();
-            return results;
+            try
+            {
+                var results = await _stats.GetStats();
+                return results;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Get Stats", ex);
+                throw;
+            }
         }
     }
 }

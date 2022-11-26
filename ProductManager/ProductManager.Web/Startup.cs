@@ -39,7 +39,7 @@ namespace ProductManager.Web
             //Services
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICommentService, CommentService>();
-            services.AddScoped<IStats, Stats>();
+            services.AddScoped<IStatsService, StatsService>();
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment env)

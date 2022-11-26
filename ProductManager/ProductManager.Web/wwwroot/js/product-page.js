@@ -1,12 +1,15 @@
 ﻿$(document).ready(function () {
     $('.date-pickers').datepicker({ format: 'yyyy-mm-dd' }); 
+    var $tableProducts = $('#products-table');
+    var $tableComments = $('#comments-table');
 
-    $(".data-form").submit(function (e) {
+    $(".product-data-form").submit(function (e) {
         e.preventDefault();
 
         var form = $(this);
         var actionUrl = form.attr('action');
         var method = form.attr('method');
+        var modalId = form.attr('data-modal');
 
         $.ajax({
             headers: {
@@ -18,8 +21,39 @@
             url: actionUrl,
             data: JSON.stringify(convertFormToJSON(form)),
             success: function (data) {
-                $('.modal').modal('hide');
+                $('#' + modalId).modal('hide');
+                form.find("input, textarea").val("");
                 loadProducts();
+            }
+        });
+    });
+
+    $(".comment-data-form").submit(function (e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var actionUrl = form.attr('action');
+        var method = form.attr('method');
+        var modalId = form.attr('data-modal');
+
+        $.ajax({
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            type: method,
+            dataType: "json",
+            url: actionUrl,
+            data: JSON.stringify(convertFormToJSON(form)),
+            success: function (data) {
+                $('#' + modalId).modal('hide');
+                $(".comment-form-ctrl").val("");
+
+                if (modalId == 'add-comment-modal') {
+                    loadComments($('#add-comment-productId-ctrl').val());
+                } else {
+                    loadComments($('#edit-comment-productId-ctrl').val());
+                }
             }
         });
     });
@@ -121,25 +155,65 @@
             {
                 type: 'GET',
                 dataType: "json",
-                success: function (data, status, xhr) {
-                    $('#products-table tbody').html("");
+                success: function (results, status, xhr) {
 
-                    if (data) {
-                        for (var i = 0; i < data.length; i++) {
-                            $('#products-table').append(
-                                '<tr><td>' + data[i].name + '</td>' +
-                                '<td>' + data[i].price + '</td>' +
-                                '<td>' + data[i].releaseDate + '</td>' +
-                                '<td class="text-center">' +
-                                '<button type="button" class="btn btn-primary view-comments" data-id="' + data[i].productID +'">Comments</button>' +
-                                '<button type="button" class="btn btn-primary edit-product" data-id="' + data[i].productID +'">Edit</button>' +
-                                '<button type="button" class="btn btn-danger delete-product" data-id="' + data[i].productID+'">Delete</button>' +
-                                '</td></tr>'
-                            );
+                    columns = [
+                        {
+                            field: 'field1',
+                            title: 'Name',
+                            sortable: true,
+                            valign: 'middle',
+                            formatter: function (val) {
+                                return '<div class="item">' + val + '</div>'
+                            }
+                        },
+                        {
+                            field: 'field2',
+                            title: 'Price',
+                            sortable: true,
+                            valign: 'middle',
+                            formatter: function (val) {
+                                return '<div class="item">' + val + '</div>'
+                            }
+                        },
+                        {
+                            field: 'field3',
+                            title: 'Releaase Date',
+                            sortable: true,
+                            valign: 'middle',
+                            formatter: function (val) {
+                                return '<div class="item">' + val + '</div>'
+                            }
+                        },
+                        {
+                            field: 'field4',
+                            title: 'Actions',
+                            sortable: true,
+                            valign: 'middle',
+                            formatter: function (val) {
+                                return '<div class="item">' + val + '</div>'
+                            }
+                        }
+                    ];
+                    data = []
+
+                    if (results) {
+                        for (var i = 0; i < results.length; i++) {
+                            row = {};
+                            row['field1'] = results[i].name;
+                            row['field2'] = results[i].price;
+                            row['field3'] = results[i].releaseDate;
+                            row['field4'] = '<div  class="text-center"><button type="button" style="margin-right: 10px;" class="btn btn-primary view-comments" data-id="' + results[i].productID + '">Comments</button>' +
+                                '<button type="button" style="margin-right: 10px;" class="btn btn-primary edit-product" data-id="' + results[i].productID + '">Edit</button>' +
+                                '<button type="button" style="margin-right: 10px;" class="btn btn-danger delete-product" data-id="' + results[i].productID + '">Delete</button></div>';
+                            data.push(row)
                         }
                     }
+
+                    buildTable($tableProducts, columns, data)
                 },
-                error: function (jqXhr, textStatus, errorMessage) { }
+                error: function (jqXhr, textStatus, errorMessage) {
+                }
             });
     }
 
@@ -148,28 +222,91 @@
             {
                 type: 'GET',
                 dataType: "json",
-                success: function (data, status, xhr) {
+                success: function (results, status, xhr) {
                     $('#view-comments-modal').modal('show');
                     $('#add-comment-btn').attr('data-productId', productId);
-                    $('#comments-table tbody').html("");
 
-                    if (data && data.comments) {
+                    var toBuildFun = function () {
+                        columns = [
+                            {
+                                field: 'field1',
+                                title: 'Email',
+                                sortable: true,
+                                valign: 'middle',
+                                formatter: function (val) {
+                                    return '<div class="item">' + val + '</div>'
+                                }
+                            },
+                            {
+                                field: 'field2',
+                                title: 'Date Of Comment',
+                                sortable: true,
+                                valign: 'middle',
+                                formatter: function (val) {
+                                    return '<div class="item">' + val + '</div>'
+                                }
+                            },
+                            {
+                                field: 'field3',
+                                title: 'Comment',
+                                sortable: true,
+                                valign: 'middle',
+                                formatter: function (val) {
+                                    return '<div class="item">' + val + '</div>'
+                                }
+                            },
+                            {
+                                field: 'field4',
+                                title: 'Actions',
+                                sortable: true,
+                                valign: 'middle',
+                                formatter: function (val) {
+                                    return '<div class="item">' + val + '</div>'
+                                }
+                            }
+                        ];
+                        data = []
 
-                        for (var i = 0; i < data.comments.length; i++) {
-                            $('#comments-table').append(
-                                '<tr><td>' + data.comments[i].email + '</td>' +
-                                '<td>' + data.comments[i].dateOfComment + '</td>' +
-                                '<td>' + data.comments[i].commentContent + '</td>' +
-                                '<td class="text-center">' +
-                                '<button type="button" class="btn btn-primary edit-comment" data-id="' + data.comments[i].commentID + '">Edit</button>' +
-                                '<button type="button" class="btn btn-danger delete-comment" data-id="' + data.comments[i].commentID + '" data-pid="' + data.comments[i].productID +'">Delete</button>' +
-                                '</td></tr>'
-                            );
+                        if (data && results.comments) {
+
+                            for (var i = 0; i < results.comments.length; i++) {
+                                row = {};
+                                row['field1'] = results.comments[i].email;
+                                row['field2'] = results.comments[i].dateOfComment;
+                                row['field3'] = results.comments[i].commentContent;
+                                row['field4'] = '<div><button type="button" style="margin-right: 10px;" class="btn btn-primary edit-comment" data-id="' + results.comments[i].commentID + '">Edit</button>' +
+                                    '<button type="button" style="margin-right: 10px;" class="btn btn-danger delete-comment" data-id="' + results.comments[i].commentID + '" data-pid="' + results.comments[i].productID + '">Delete</button></div>';
+                                data.push(row)
+                            }
                         }
+
+                        buildTable($tableComments, columns, data);
+                    };
+                    
+                    if ($("#view-comments-modal").is(':visible')) {
+                        toBuildFun();
+                    } else {
+                        $('#view-comments-modal').on('shown.bs.modal', toBuildFun);
                     }
                 },
-                error: function (jqXhr, textStatus, errorMessage) { }
+                error: function (jqXhr, textStatus, errorMessage) {
+                }
             });
+    }
+
+    function buildTable($el, columns, data) {
+        $el.bootstrapTable('destroy').bootstrapTable({
+            height: 400,
+            columns: columns,
+            data: data,
+            search: true,
+            showColumns: true,
+            showToggle: false,
+            clickToSelect: true,
+            fixedColumns: true,
+            fixedNumber: 2,
+            fixedRightNumber: 1
+        });
     }
 
     loadProducts();

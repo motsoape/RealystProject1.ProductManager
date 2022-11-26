@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using ProductManager.Repositories.Entities;
 using ProductManager.Repositories.Models;
 using ProductManager.Services;
@@ -15,10 +16,12 @@ namespace ProductManager.Web.Controllers.Api
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly ILogger<ProductController> _logger;
 
-        public ProductController(IProductService productsService)
+        public ProductController(IProductService productsService, ILogger<ProductController> logger)
         {
             _productService = productsService;
+            _logger = logger;
         }
 
         // GET: api/Product
@@ -26,8 +29,15 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("GetProducts")]
         public async Task<IEnumerable<ProductModel>> Get()
         {
-            IEnumerable<ProductModel> product = await _productService.GetProducts();
-            return product;
+            try { 
+                IEnumerable<ProductModel> product = await _productService.GetProducts();
+                return product;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Get Products", ex);
+                throw;
+            }
         }
 
         // GET: api/Product/{id}
@@ -35,9 +45,16 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("GetProduct")]
         public async Task<ProductModel> Get(int id)
         {
-            ProductModel product = await _productService.GetProduct(id);
+            try { 
+                ProductModel product = await _productService.GetProduct(id);
 
-            return product;
+                return product;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Get Product", ex);
+                throw;
+            }
         }
 
         // POST: api/Product
@@ -45,9 +62,19 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("AddProduct")]
         public async Task<bool> Post([FromBody] ProductModel product)
         {
-            await _productService.AddProduct(product);
+            try {
+                if (product == null)
+                    throw new ArgumentNullException(nameof(product), "Cannot be Null or Empty");
 
-            return true;
+                await _productService.AddProduct(product);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Add Product", ex);
+                throw;
+            }
         }
 
         // POST: api/Product/Bulk
@@ -55,9 +82,19 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("BulkAddProducts")]
         public async Task<bool> Post([FromBody] IEnumerable<ProductModel> products)
         {
-            await _productService.AddBulkProduct(products);
+            try {
+                if (products == null)
+                    throw new ArgumentNullException(nameof(products), "Cannot be Null or Empty");
 
-            return true;
+                await _productService.AddBulkProduct(products);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Add Products", ex);
+                throw;
+            }
         }
 
         // PUT: api/Product/{id}
@@ -65,9 +102,19 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("UpdateProduct")]
         public async Task<bool> Put(int id, [FromBody] ProductModel product)
         {
-            await _productService.UpdateProduct(id, product);
+            try {
+                if (product == null)
+                    throw new ArgumentNullException(nameof(product), "Cannot be Null or Empty");
 
-            return true;
+                await _productService.UpdateProduct(id, product);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Update Product", ex);
+                throw;
+            }
         }
 
         // DELETE: api/Product/{id}
@@ -75,9 +122,16 @@ namespace ProductManager.Web.Controllers.Api
         [SwaggerOperation("DeleteProduct")]
         public async Task<bool> Delete(int id)
         {
-            await _productService.DeleteProduct(id);
+            try { 
+                await _productService.DeleteProduct(id);
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to Update Product", ex);
+                throw;
+            }
         }
     }
 }

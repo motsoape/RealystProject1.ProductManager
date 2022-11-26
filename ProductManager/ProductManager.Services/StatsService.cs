@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace ProductManager.Services
 {
-    public class Stats : IStats
+    public class StatsService : IStatsService
     {
         private readonly IProductService _productService;
         private readonly ICommentService _commentsService;
 
-        public Stats(IProductService productsService, ICommentService commentsService)
+        public StatsService(IProductService productsService, ICommentService commentsService)
         {
             _productService = productsService;
             _commentsService = commentsService;

@@ -15,26 +15,15 @@
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-product-modal">Add Product</button>
 
     <div class="table-responsive">
-        <table class="table" id="products-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Release Date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <table id="products-table"></table>
     </div>
 </div>
 
 
-<!-- Add Modal -->
+<!-- Add Product Modal -->
 <div class="modal fade" id="add-product-modal" tabindex="-1" aria-labelledby="add-product-modal" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="data-form" id="add-product-form" method="POST" action="@(Model+"/api/Product")">
+        <form class="product-data-form" id="add-product-form" data-modal="add-product-modal" method="POST" action="@(Model+"/api/Product")">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5">Add Product</h1>
@@ -63,10 +52,10 @@
     </div>
 </div>
 
-<!-- Edit Modal -->
+<!-- Edit Product Modal -->
 <div class="modal fade" id="edit-product-modal" tabindex="-1" aria-labelledby="edit-product-modal" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="data-form" id="edit-product-form" method="PUT" action="">
+        <form class="product-data-form" id="edit-product-form" data-modal="edit-product-modal" method="PUT" action="">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5">Edit Product</h1>
@@ -97,7 +86,7 @@
 
 <!-- View Comments -->
 <div class="modal fade" id="view-comments-modal" tabindex="-1" aria-labelledby="view-comments-modal" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="comments-view">Product Comments</h1>
@@ -105,17 +94,7 @@
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
-                    <table class="table" id="comments-table">
-                        <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Comment Date</th>
-                                <th>Comment</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
+                    <table id="comments-table">
                     </table>
                 </div>
             </div>
@@ -127,10 +106,10 @@
     </div>
 </div>
 
-<!-- Add Comment -->
+<!-- Add Comment Modal -->
 <div class="modal fade" id="add-comment-modal" tabindex="-1" aria-labelledby="add-comment-modal" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="data-form" id="add-comment-form" method="POST" action="@(Model+"/api/Comment")">
+        <form class="comment-data-form" id="add-comment-form" data-modal="add-comment-modal" method="POST" action="@(Model+"/api/Comment")">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5">Add Comment</h1>
@@ -140,11 +119,11 @@
                     <input type="hidden" name="productID" class="form-control" id="add-comment-productId-ctrl" >
                     <div class="mb-3">
                         <label for="add-comment-email-ctrl" class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" id="add-comment-email-ctrl" placeholder="Email" required="true">
+                        <input type="email" name="email" class="form-control comment-form-ctrl" id="add-comment-email-ctrl" placeholder="Email" required="true">
                     </div>
                     <div class="mb-3">
                         <label for="add-comment-content-ctrl" class="form-label">Comment Area</label>
-                        <textarea name="commentContent" class="form-control" id="add-comment-content-ctrl" rows="3"></textarea>
+                        <textarea name="commentContent" class="form-control comment-form-ctrl" id="add-comment-content-ctrl" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -156,10 +135,10 @@
     </div>
 </div>
 
-<!-- Edit Comment -->
+<!-- Edit Comment Modal-->
 <div class="modal fade" id="edit-comment-modal" tabindex="-1" aria-labelledby="edit-comment-modal" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="data-form" id="edit-comment-form" method="PUT" action="">
+        <form class="comment-data-form" id="edit-comment-form" data-modal="edit-comment-modal" method="PUT" action="">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5">Edit Comment</h1>
@@ -169,11 +148,11 @@
                     <input type="hidden" name="productID" class="form-control" id="edit-comment-productId-ctrl">
                     <div class="mb-3">
                         <label for="edit-comment-email-ctrl" class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" id="edit-comment-email-ctrl" placeholder="Email" required="true">
+                        <input type="email" name="email" class="form-control comment-form-ctrl" id="edit-comment-email-ctrl" placeholder="Email" required="true">
                     </div>
                     <div class="mb-3">
                         <label for="edit-comment-content-ctrl" class="form-label">Comment Area</label>
-                        <textarea name="commentContent" class="form-control" id="edit-comment-content-ctrl" rows="3"></textarea>
+                        <textarea name="commentContent" class="form-control comment-form-ctrl" id="edit-comment-content-ctrl" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
