@@ -11,14 +11,14 @@ This project is located under ProductManager.
     "ProductManagerDB": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ProductManagerDb;Integrated Security=True"
   }
 ```
-Once the database connection string is set, you can run the application, this will create the database if it does not exists and seed the Product table with two records and seed Comment table only one comment for the first product.
+Once the database connection string is set, you can run the application, this will create the database if it does not exists and seed the Product table with two records and seed Comment table with only one comment for the first product.
 
-- You can access the swegger documentation for Product Manager Rest API on http://localhost:5089/swagger/index.html 
+- You can access the swagger documentation for Product Manager Rest API on http://localhost:5089/swagger/index.html 
 ![image](https://user-images.githubusercontent.com/10927151/204085708-404a9d6f-e941-4663-a51c-bbcb85f6bb79.png)
 
 The web application can be acccessed throught http://localhost:5089
 
-- Once the application has been opened the you will be presented with a default page which is product page.
+- Once the application has been opened then you will be presented with a default page which is product page.
 ![image](https://user-images.githubusercontent.com/10927151/204085793-1e7a6e9d-386d-4db3-b119-4f8dc92abfeb.png)
 You can filter the table with the search input field at your right, and you can also sort the table using table calumn sort buttons.
  
@@ -44,7 +44,7 @@ You can filter the table with the search input field at your right, and you can 
 - Click on Stats on the navigation menu to navigate to Stats page.
 ![image](https://user-images.githubusercontent.com/10927151/204086245-daea73fa-2cb2-4460-a6ff-1b7e5ab607ea.png)
 
-That should take you to stats page.
+Clicking stats should take you to stats page.
 ![image](https://user-images.githubusercontent.com/10927151/204086281-d67e17e4-9dfc-4f96-8320-02a2b8abb998.png)
 
 ### Product Manager Console Application
@@ -59,7 +59,7 @@ Update the "BaseURL" on appsettings.json for connection to ProductManager API
 ```
 Once the appsettings is set you can run the application.
 
-This will present you with a console which will prompt you to enter the path to the excel file data.
+This will open a console which will prompt you to enter the path to the excel file data.
 ![image](https://user-images.githubusercontent.com/10927151/204086625-daa355aa-4b73-4ba1-ba0d-65eac5ed8949.png)
 
 Once you enter the file then the application should read product data and send them as a bulk to Product Manager API.
